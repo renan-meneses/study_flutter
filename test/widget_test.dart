@@ -1,30 +1,27 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:study_flutter/main.dart';
+import 'package:test/test.dart';
+import 'package:study_flutter/modulo/imc_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Calculadora de IMC deve exibir o IMC correto', (WidgetTester tester) async {
+    // Arrange (Configurar o ambiente de teste)
+    await tester.pumpWidget(ImcScreen());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Act (Interagir com a interface do usuário)
+    final pesoController = await tester.findWidget(byType(TextField)).first.controller;
+    pesoController.text = '70';
+    await tester.pumpWidget(ImcScreen());
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    final alturaController = await tester.findWidget(byType(TextField)).last.controller;
+    alturaController.text = '1.7';
+    await tester.pumpWidget(ImcScreen());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final calcularButton = find.byType(ElevatedButton);
+    await tester.tap(calcularButton);
+    await tester.pumpWidget(ImcScreen());
+
+    // Assert (Verificar o resultado esperado)
+    final resultText = find.text('IMC: 24.19');
+    expect(resultText, exists);
   });
 }
